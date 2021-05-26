@@ -52,7 +52,7 @@ function buildElement(
     return element;
 }
 
-function boardTemplate() {
+function Board() {
     return buildElement(
         'div', {
             classList: ['board'],
@@ -60,15 +60,15 @@ function boardTemplate() {
                 ondragover: onDragOver,
                 ondrop: onDrop
             }, children: [
-                boardHeaderTemplate(),
-                cardContainerTemplate(),
-                addCardTemplate()
+                BoardHeader(),
+                CardContainer(),
+                AddCardButton()
             ]
         }
     )
 }
 
-function boardHeaderTemplate() {
+function BoardHeader() {
     return buildElement(
         'h3', {
             classList: ['board-header'],
@@ -77,13 +77,13 @@ function boardHeaderTemplate() {
     )
 }
 
-function cardContainerTemplate() {
+function CardContainer() {
     return buildElement(
         'div', {classList:['card-container']}
     )
 }
 
-function cardTemplate() {
+function Card() {
     if(!this.counter) { this.counter = 0 }
     this.counter += 1;
 
@@ -98,23 +98,23 @@ function cardTemplate() {
     )
 }
 
-function addCardTemplate() {
+function addCard(event) {
+    const board = event.target.parentNode;
+                    board.appendChild(Card());
+                    board.appendChild(event.target);
+}
+
+function AddCardButton() {
     return buildElement(
         'div', {
             classList: ['new-card'],
             innerHTML: "+ Adicionar outro item",
-            events: {
-                onclick: event => {
-                    const board = event.target.parentNode;
-                    board.appendChild(cardTemplate());
-                    board.appendChild(event.target);
-                }
-            }
+            events: { onclick: addCard }
         }
     )
 }
 
-function boardFormTemplate() {
+function BoardForm() {
     const textForm = buildElement(
         'input', {
             placeholder: 'Insira Título da Lista',
@@ -138,14 +138,24 @@ function boardFormTemplate() {
     })
 }
 
-window.onload = () => {
-    const boardContainer = document.getElementById('board-container');
-
-    const newBoard = document.getElementById("new-board-button");
-    newBoard.onclick = event => {
-        boardContainer.appendChild(boardTemplate());
-        boardContainer.appendChild(event.target);
-    }
-
-    boardContainer.appendChild(boardFormTemplate());
+function addBoard(event) {
+    BoardContainer.appendChild(Board());
+    BoardContainer.appendChild(event.target);
 }
+
+const AddBoardButton = buildElement(
+    'a', {
+        innerHTML: "+ Adicionar Outra Lista",
+        classList: ['new-board'],
+        id: 'new-board-button',
+        events: {onclick: addBoard}
+    })
+
+const BoardContainer = buildElement(
+    'a', {
+        classList: ['board-container'],
+        id: 'board-container',
+        children: [AddBoardButton]
+    })
+
+window.onload = () => {document.body.appendChild(BoardContainer);};
