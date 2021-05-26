@@ -54,6 +54,7 @@ body {
     height: 2em;
     display: block;
     width: 98%;
+    margin-bottom: 5px;
 }
 
 .board-form button {
@@ -64,6 +65,7 @@ body {
     background: #116530;
     padding: 3px 5px;
     color: #EEE;
+    margin-right: 5px;
 }
 
 .board-form > .cancel-button {
