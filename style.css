@@ -46,29 +46,33 @@ body {
     width: 95%;
 }
 
+.card-form {
+    border: 1px solid #000;
+}
+
 .board-form {
     background: #a3ebb1;
 }
 
-.board-form > input {
+input {
     height: 2em;
     display: block;
     width: 98%;
     margin-bottom: 5px;
 }
 
-.board-form button {
+button {
     border: none;
 }
 
-.board-form > .apply-button {
+.apply-button {
     background: #116530;
     padding: 3px 5px;
     color: #EEE;
     margin-right: 5px;
 }
 
-.board-form > .cancel-button {
+.cancel-button {
     background: #FA2323;
     padding: 3px 5px;
 }

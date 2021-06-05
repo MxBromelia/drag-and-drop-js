@@ -88,7 +88,7 @@ function CardContainer() {
     )
 }
 
-function Card() {
+function Card(text) {
     if(!this.counter) { this.counter = 0 }
     this.counter += 1;
 
@@ -98,14 +98,62 @@ function Card() {
             classList: ['card'],
             attributes: {draggable: true},
             events: {ondragstart: onDragStart},
-            innerHTML: `[Card ${this.counter} Text]`
+            innerHTML: text
+        }
+    )
+}
+
+function CardFormTextField() {
+    return buildElement(
+        'input', {
+            attributes: { required: true }
+        }
+    )
+}
+
+function CardFormApplyButton() {
+    return buildElement(
+        'button', {
+            classList: ['apply-button'],
+            innerHTML: 'Criar'
+        }
+    )
+}
+
+function CardFormCancelButton() {
+    return buildElement(
+        'button', {
+            attributes: { type: 'button' },
+            classList: ['cancel-button'],
+            innerHTML: 'Cancelar'
+        }
+    )
+}
+
+function CardForm(cardContainer) {
+    const cardFormTextField = CardFormTextField();
+    return buildElement(
+        'form', {
+            classList: ['card-form'],
+            children: [
+                cardFormTextField,
+                CardFormApplyButton(),
+                CardFormCancelButton()
+            ], onsubmit: event => {
+                cardContainer.appendChild(Card(cardFormTextField.value));
+                event.target.remove();
+                return false;
+            }
         }
     )
 }
 
 function addCard({target, ..._}) {
-    const board = target.closest('.board').querySelector('.card-container');
-    board.appendChild(Card());
+    const cardContainer = target.closest('.board').querySelector('.card-container');
+    const cardForm = CardForm(cardContainer);
+
+    cardContainer.appendChild(cardForm);
+    cardForm.querySelector('input').focus();
 }
 
 function AddCardButton() {
