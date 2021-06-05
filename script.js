@@ -14,7 +14,11 @@ function onDrop(event) {
     const dropzone = event.target.closest('.board')
                           .querySelector('.card-container');
     
-    dropzone.appendChild(draggableElement);
+    if(event.target.classList.contains('card')) {
+        dropzone.insertBefore(draggableElement, event.target);
+    } else {
+        dropzone.appendChild(draggableElement);
+    }
 }
 
 function buildElement(
@@ -52,7 +56,7 @@ function buildElement(
     return element;
 }
 
-function Board() {
+function Board(header=null) {
     return buildElement(
         'div', {
             classList: ['board'],
@@ -60,19 +64,20 @@ function Board() {
                 ondragover: onDragOver,
                 ondrop: onDrop
             }, children: [
-                BoardHeader(),
+                BoardHeader(header),
                 CardContainer(),
                 AddCardButton()
-            ]
+            ],
+            // attributes: {draggable: true}
         }
     )
 }
 
-function BoardHeader() {
+function BoardHeader(header=null) {
     return buildElement(
         'h3', {
             classList: ['board-header'],
-            innerHTML: "[Board Text]",
+            innerHTML: header || "[Board Text]",
         }
     )
 }
@@ -98,10 +103,9 @@ function Card() {
     )
 }
 
-function addCard(event) {
-    const board = event.target.parentNode;
-                    board.appendChild(Card());
-                    board.appendChild(event.target);
+function addCard({target, ..._}) {
+    const board = target.closest('.board').querySelector('.card-container');
+    board.appendChild(Card());
 }
 
 function AddCardButton() {
@@ -114,33 +118,57 @@ function AddCardButton() {
     )
 }
 
-function BoardForm() {
-    const textForm = buildElement(
+function BoardFormTextForm() {
+    return buildElement(
         'input', {
             placeholder: 'Insira Título da Lista',
+            attributes: { required: true }
     })
-    const applyButton = buildElement(
+}
+
+function BoardFormApplyButton() {
+    return buildElement(
         'button', {
             classList: ['apply-button'],
             attributes: {href: '#'},
             innerHTML: 'Criar'
     })
-    const cancelButton = buildElement(
+}
+
+function BoardFormCancelButton() {
+    return buildElement(
         'button', {
             classList: ['cancel-button'],
-            attributes: {href: '#'},
+            attributes: {href: '#', type: 'button'},
             innerHTML: 'Cancelar',
-        })
-    return buildElement(
-        'form', {
-            classList: ['board-form'],
-            children: [textForm, applyButton, cancelButton]
+            onclick: event => {
+                const boardForm = event.target.closest('.board-form');
+                boardForm.remove();
+            }
     })
 }
 
+function BoardForm() {
+    const boardFormTextForm = BoardFormTextForm();
+    return buildElement(
+        'form', {
+            classList: ['board-form'],
+            children: [
+                boardFormTextForm,
+                BoardFormApplyButton(),
+                BoardFormCancelButton()
+            ], onsubmit: event => {
+                BoardContainer.insertBefore(Board(boardFormTextForm.value), AddBoardButton);
+                event.target.remove();
+                return false;
+            }
+    });
+}
+
 function addBoard(event) {
-    BoardContainer.appendChild(Board());
-    BoardContainer.appendChild(event.target);
+    const boardForm = BoardForm();
+    BoardContainer.insertBefore(boardForm, event.target);
+    boardForm.querySelector('input').focus();
 }
 
 const AddBoardButton = buildElement(
@@ -148,7 +176,7 @@ const AddBoardButton = buildElement(
         innerHTML: "+ Adicionar Outra Lista",
         classList: ['new-board'],
         id: 'new-board-button',
-        events: {onclick: addBoard}
+        events: { onclick: addBoard }
     })
 
 const BoardContainer = buildElement(
@@ -158,4 +186,15 @@ const BoardContainer = buildElement(
         children: [AddBoardButton]
     })
 
-window.onload = () => {document.body.appendChild(BoardContainer);};
+window.onload = () => {
+    document.body.appendChild(BoardContainer);
+    window.addEventListener('click', event => {
+        let boardForm = document.querySelector('.board-form');
+
+        if(boardForm) {
+            AddBoardButton.setAttribute('hidden', null);
+        } else {
+            AddBoardButton.removeAttribute('hidden');
+        }
+    })
+};
