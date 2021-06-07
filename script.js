@@ -62,13 +62,15 @@ function setElement(
 
 function Board(header) {
     const cardContainer = CardContainer();
-    return buildElement(
-        'div', {
+    const board = buildElement('div');
+    return setElement(
+        board, {
             classList: ['board'],
             events: {
                 ondragover: onDragOver,
                 ondrop: onDrop
             }, children: [
+                RemoveElementButton(board),
                 BoardHeader(header),
                 cardContainer,
                 AddCardButton(cardContainer)
@@ -93,17 +95,12 @@ function CardContainer() {
     )
 }
 
-function RemoveCardButton() {
+function RemoveElementButton(element) {
     return buildElement(
         'div', {
             classList: ['remove-card'],
             innerHTML: '<i class="fas fa-trash"></i>',
-            events: {
-                onclick: event => {
-                    const card = event.target.closest('.card');
-                    card.remove();
-                }
-            }
+            events: { onclick: () => { element.remove(); } }
         }
     )
 }
@@ -113,15 +110,16 @@ function Card(str_text) {
     this.counter += 1;
 
     const text = document.createTextNode(str_text);
+    const card = buildElement('div');
 
-    return buildElement(
-        'div', {
-            id: `drag-card=${this.counter}`,
+    return setElement(
+        card, {
+            id: `drag-card-${this.counter}`,
             classList: ['card'],
             attributes: {draggable: true},
             children: [
                 text,
-                RemoveCardButton()
+                RemoveElementButton(card)
             ], events: {ondragstart: onDragStart},
         }
     )
