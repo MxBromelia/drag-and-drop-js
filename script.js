@@ -61,6 +61,7 @@ function setElement(
 }
 
 function Board(header) {
+    const cardContainer = CardContainer();
     return buildElement(
         'div', {
             classList: ['board'],
@@ -69,8 +70,8 @@ function Board(header) {
                 ondrop: onDrop
             }, children: [
                 BoardHeader(header),
-                CardContainer(),
-                AddCardButton()
+                cardContainer,
+                AddCardButton(cardContainer)
             ],
             // attributes: {draggable: true}
         }
@@ -143,26 +144,34 @@ function CardFormApplyButton() {
     )
 }
 
-function CardFormCancelButton() {
+function CardFormCancelButton(addCardButton, cardForm) {
     return buildElement(
         'button', {
             attributes: { type: 'button' },
             classList: ['cancel-button'],
-            innerHTML: 'Cancelar'
+            innerHTML: 'Cancelar',
+            events: {
+                onclick: () => {
+                    addCardButton.hidden = false;
+                    cardForm.remove();
+                }
+            }
         }
     )
 }
 
-function CardForm(cardContainer) {
+function CardForm(addCardButton, cardContainer) {
     const cardFormTextField = CardFormTextField();
-    return buildElement(
-        'form', {
+    const cardForm = buildElement('form');
+    return setElement(
+        cardForm, {
             classList: ['card-form'],
             children: [
                 cardFormTextField,
                 CardFormApplyButton(),
-                CardFormCancelButton()
+                CardFormCancelButton(addCardButton, cardForm)
             ], onsubmit: event => {
+                addCardButton.hidden = false;
                 cardContainer.appendChild(Card(cardFormTextField.value));
                 event.target.remove();
                 return false;
@@ -171,20 +180,23 @@ function CardForm(cardContainer) {
     )
 }
 
-function addCard({target, ..._}) {
-    const cardContainer = target.closest('.board').querySelector('.card-container');
-    const cardForm = CardForm(cardContainer);
+function addCard(addCardButton, cardContainer, {target, ..._}) {
+    addCardButton.hidden = true;
+    const cardForm = CardForm(addCardButton, cardContainer);
 
     cardContainer.appendChild(cardForm);
     cardForm.querySelector('input').focus();
 }
 
-function AddCardButton() {
-    return buildElement(
-        'div', {
+function AddCardButton(cardContainer) {
+    const addCardButton = buildElement('div');
+    return setElement(
+        addCardButton, {
             classList: ['new-card'],
             innerHTML: "+ Adicionar outro item",
-            events: { onclick: addCard }
+            events: {
+                onclick: event => { addCard(addCardButton, cardContainer, event); }
+            }
         }
     )
 }
@@ -212,7 +224,10 @@ function BoardFormCancelButton(boardForm) {
             classList: ['cancel-button'],
             attributes: {href: '#', type: 'button'},
             innerHTML: 'Cancelar',
-            onclick: () => { boardForm.remove(); }
+            onclick: () => {
+                AddBoardButton.hidden = false;
+                boardForm.remove();
+            }
     })
 }
 
