@@ -56,7 +56,7 @@ function buildElement(
     return element;
 }
 
-function Board(header=null) {
+function Board(header) {
     return buildElement(
         'div', {
             classList: ['board'],
@@ -73,11 +73,11 @@ function Board(header=null) {
     )
 }
 
-function BoardHeader(header=null) {
+function BoardHeader(header) {
     return buildElement(
         'h3', {
             classList: ['board-header'],
-            innerHTML: header || "[Board Text]",
+            innerHTML: header,
         }
     )
 }
@@ -88,17 +88,36 @@ function CardContainer() {
     )
 }
 
-function Card(text) {
+function RemoveCardButton() {
+    return buildElement(
+        'div', {
+            classList: ['remove-card'],
+            innerHTML: '<i class="fas fa-trash"></i>',
+            events: {
+                onclick: event => {
+                    const card = event.target.closest('.card');
+                    card.remove();
+                }
+            }
+        }
+    )
+}
+
+function Card(str_text) {
     if(!this.counter) { this.counter = 0 }
     this.counter += 1;
+
+    const text = document.createTextNode(str_text);
 
     return buildElement(
         'div', {
             id: `drag-card=${this.counter}`,
             classList: ['card'],
             attributes: {draggable: true},
-            events: {ondragstart: onDragStart},
-            innerHTML: text
+            children: [
+                text,
+                RemoveCardButton()
+            ], events: {ondragstart: onDragStart},
         }
     )
 }

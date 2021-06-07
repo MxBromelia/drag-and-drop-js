@@ -37,6 +37,11 @@ body {
     margin: 5px 0px;
 }
 
+.remove-card {
+    float: right;
+    padding-right: 10px;
+}
+
 .new-card {
     padding: 5px 0px;
     text-align: center;
@@ -47,7 +52,7 @@ body {
 }
 
 .card-form {
-    border: 1px solid #000;
+    background: #18a558;
 }
 
 .board-form {
