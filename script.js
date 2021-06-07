@@ -80,31 +80,6 @@ function Board(header) {
     )
 }
 
-function BoardHeader(header) {
-    return buildElement(
-        'h3', {
-            classList: ['board-header'],
-            innerHTML: header,
-        }
-    )
-}
-
-function CardContainer() {
-    return buildElement(
-        'div', {classList:['card-container']}
-    )
-}
-
-function RemoveElementButton(element) {
-    return buildElement(
-        'div', {
-            classList: ['remove-card'],
-            innerHTML: '<i class="fas fa-trash"></i>',
-            events: { onclick: () => { element.remove(); } }
-        }
-    )
-}
-
 function Card(str_text) {
     if(!this.counter) { this.counter = 0 }
     this.counter += 1;
@@ -121,6 +96,31 @@ function Card(str_text) {
                 text,
                 RemoveElementButton(card)
             ], events: {ondragstart: onDragStart},
+        }
+    )
+}
+
+function CardContainer() {
+    return buildElement(
+        'div', {classList:['card-container']}
+    )
+}
+
+function BoardHeader(header) {
+    return buildElement(
+        'h3', {
+            classList: ['board-header'],
+            innerHTML: header,
+        }
+    )
+}
+
+function RemoveElementButton(element) {
+    return buildElement(
+        'div', {
+            classList: ['remove-card'],
+            innerHTML: '<i class="fas fa-trash"></i>',
+            events: { onclick: () => { element.remove(); } }
         }
     )
 }
