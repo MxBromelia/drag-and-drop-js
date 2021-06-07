@@ -125,15 +125,16 @@ function Card(str_text) {
     )
 }
 
-function CardFormTextField() {
+function TextField(placeholder) {
     return buildElement(
         'input', {
+            placeholder: placeholder,
             attributes: { required: true }
         }
     )
 }
 
-function CardFormApplyButton() {
+function FormApplyButton() {
     return buildElement(
         'button', {
             classList: ['apply-button'],
@@ -142,16 +143,16 @@ function CardFormApplyButton() {
     )
 }
 
-function CardFormCancelButton(addCardButton, cardForm) {
+function FormCancelButton(addElementButton, elementForm) {
     return buildElement(
         'button', {
-            attributes: { type: 'button' },
             classList: ['cancel-button'],
+            attributes: { type: 'button' },
             innerHTML: 'Cancelar',
             events: {
                 onclick: () => {
-                    addCardButton.hidden = false;
-                    cardForm.remove();
+                    addElementButton.hidden = false;
+                    elementForm.remove();
                 }
             }
         }
@@ -159,23 +160,46 @@ function CardFormCancelButton(addCardButton, cardForm) {
 }
 
 function CardForm(addCardButton, cardContainer) {
-    const cardFormTextField = CardFormTextField();
     const cardForm = buildElement('form');
+    const cardFormTextField = TextField("Insira Título do Cartão");
     return setElement(
         cardForm, {
             classList: ['card-form'],
             children: [
                 cardFormTextField,
-                CardFormApplyButton(),
-                CardFormCancelButton(addCardButton, cardForm)
+                FormApplyButton(),
+                FormCancelButton(addCardButton, cardForm)
             ], onsubmit: event => {
+                const card = Card(cardFormTextField.value);
+
                 addCardButton.hidden = false;
-                cardContainer.appendChild(Card(cardFormTextField.value));
+                cardContainer.appendChild(card);
                 event.target.remove();
                 return false;
             }
         }
     )
+}
+
+function BoardForm() {
+    const boardForm = buildElement('form');
+    const boardFormTextField = TextField("Insira Título da Lista");
+    return setElement(
+        boardForm, {
+            classList: ['board-form'],
+            children: [
+                boardFormTextField,
+                FormApplyButton(),
+                FormCancelButton(AddBoardButton, boardForm)
+            ], onsubmit: event => {
+                const board = Board(boardFormTextField.value);
+
+                AddBoardButton.hidden = false;
+                BoardContainer.insertBefore(board, AddBoardButton);
+                event.target.remove();
+                return false;
+            }
+    });
 }
 
 function addCard(addCardButton, cardContainer, {target, ..._}) {
@@ -197,55 +221,6 @@ function AddCardButton(cardContainer) {
             }
         }
     )
-}
-
-function BoardFormTextForm() {
-    return buildElement(
-        'input', {
-            placeholder: 'Insira Título da Lista',
-            attributes: { required: true }
-    })
-}
-
-function BoardFormApplyButton() {
-    return buildElement(
-        'button', {
-            classList: ['apply-button'],
-            attributes: {href: '#'},
-            innerHTML: 'Criar'
-    })
-}
-
-function BoardFormCancelButton(boardForm) {
-    return buildElement(
-        'button', {
-            classList: ['cancel-button'],
-            attributes: {href: '#', type: 'button'},
-            innerHTML: 'Cancelar',
-            onclick: () => {
-                AddBoardButton.hidden = false;
-                boardForm.remove();
-            }
-    })
-}
-
-function BoardForm() {
-    const boardForm = buildElement('form');
-    const boardFormTextForm = BoardFormTextForm();
-    return setElement(
-        boardForm, {
-            classList: ['board-form'],
-            children: [
-                boardFormTextForm,
-                BoardFormApplyButton(),
-                BoardFormCancelButton(boardForm)
-            ], onsubmit: event => {
-                AddBoardButton.hidden = false;
-                BoardContainer.insertBefore(Board(boardFormTextForm.value), AddBoardButton);
-                event.target.remove();
-                return false;
-            }
-    });
 }
 
 function addBoard(event) {
