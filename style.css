@@ -37,6 +37,14 @@ body {
     margin: 5px 0px;
 }
 
+.hide {
+    display: none;
+}
+
+.preview-card {
+    background: #fff
+}
+
 .remove-card {
     float: right;
     padding-right: 10px;

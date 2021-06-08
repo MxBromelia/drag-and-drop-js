@@ -1,26 +1,3 @@
-function onDragStart(event) {
-    event.dataTransfer
-         .setData('text/plain', event.target.id);
-}
-
-function onDragOver(event) {
-    event.preventDefault();
-}
-
-function onDrop(event) {
-    event.preventDefault();
-    const id = event.dataTransfer.getData('text/plain');
-    const draggableElement = document.getElementById(id);
-    const dropzone = event.target.closest('.board')
-                          .querySelector('.card-container');
-    
-    if(event.target.classList.contains('card')) {
-        dropzone.insertBefore(draggableElement, event.target);
-    } else {
-        dropzone.appendChild(draggableElement);
-    }
-}
-
 function buildElement(tag, options) {
     const element = document.createElement(tag);
     return setElement(element, options);
@@ -60,6 +37,60 @@ function setElement(
     return element;
 }
 
+function onDragStart(event) {
+    setTimeout(() => {
+        event.target.classList.add('hide');
+    }, 0);
+
+    event.dataTransfer.setData('text/plain', event.target.id);
+}
+
+function onDragEnd(event) {
+    event.target.classList.remove('hide');
+}
+
+function onDragOver(event) {
+    event.preventDefault();
+}
+
+function onDrop(event) {
+    event.preventDefault();
+    const id = event.dataTransfer.getData('text/plain');
+    const draggableElement = document.getElementById(id);
+    const previewCard = event.target.closest('.board').querySelector('.preview-card');
+    const dropzone = event.target.closest('.board')
+                          .querySelector('.card-container');
+    
+    if(event.target.classList.contains('card')) {
+        dropzone.insertBefore(draggableElement, event.target);
+    } else {
+        dropzone.appendChild(draggableElement);
+    }
+    previewCard.remove();
+}
+
+function Placeholder() {
+    return buildElement(
+        'div', {
+            classList: ['card', 'preview-card'],
+    });
+}
+
+const placeholder = Placeholder();
+
+function onDragEnter({target, ..._}, cardContainer) {
+    if(!target.classList) { return; }
+    if(target.classList.contains('card')) {
+        cardContainer.insertBefore(placeholder, target);
+    } else {
+        cardContainer.appendChild(placeholder);
+    }
+}
+
+function onDragLeave() {
+    document.removeChild(placeholder);
+}
+
 function Board(header) {
     const cardContainer = CardContainer();
     const board = buildElement('div');
@@ -68,7 +99,9 @@ function Board(header) {
             classList: ['board'],
             events: {
                 ondragover: onDragOver,
-                ondrop: onDrop
+                ondrop: onDrop,
+                ondragenter: event => { onDragEnter(event, cardContainer) },
+                ondragLeave: onDragLeave
             }, children: [
                 RemoveElementButton(board),
                 BoardHeader(header),
@@ -95,7 +128,10 @@ function Card(str_text) {
             children: [
                 text,
                 RemoveElementButton(card)
-            ], events: {ondragstart: onDragStart},
+            ], events: {
+                ondragstart: onDragStart,
+                ondragend: onDragEnd
+            },
         }
     )
 }
