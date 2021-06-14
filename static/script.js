@@ -69,14 +69,14 @@ function onDrop(event) {
     previewCard.remove();
 }
 
-function Placeholder() {
+function PreviewCard() {
     return buildElement(
         'div', {
             classList: ['card', 'preview-card'],
     });
 }
 
-const placeholder = Placeholder();
+const placeholder = PreviewCard();
 
 function onDragEnter({target, ..._}, cardContainer) {
     if(!target.classList) { return; }
@@ -165,6 +165,7 @@ function TextField(placeholder) {
     return buildElement(
         'input', {
             placeholder: placeholder,
+            name: 'title',
             attributes: { required: true }
         }
     )
