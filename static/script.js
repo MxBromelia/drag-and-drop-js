@@ -231,9 +231,20 @@ function BoardForm() {
             ], onsubmit: event => {
                 const board = Board(boardFormTextField.value);
 
-                AddBoardButton.hidden = false;
-                BoardContainer.insertBefore(board, AddBoardButton);
-                event.target.remove();
+                fetch('/boards', {method: 'POST', body: new FormData(boardForm)})
+                    .then(response => {
+                        if(!response.ok) return Promise.reject("");
+
+                        BoardContainer.insertBefore(board, AddBoardButton);
+                    })
+                    .catch(() => {
+                        alert("Deu erro!");
+                    })
+                    .finally(() => {
+                        AddBoardButton.hidden = false;
+                        event.target.remove();
+                    })
+
                 return false;
             }
     });

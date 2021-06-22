@@ -27,7 +27,7 @@ def create_board():
     query = "insert into boards(title) values (?)"
     sqlexecute(query, (request.form.get('title'),))
 
-    return jsonify({'status': 'success'})
+    return jsonify({'status': 'success', 'params': {k:v for k,v in request.form.items()}})
 
 @app.route('/boards/<int:board_id>/cards', methods=['POST'])
 def create_card(board_id):
@@ -38,7 +38,7 @@ def create_card(board_id):
 
 @app.route('/cards/<int:id>', methods=['DELETE'])
 def delete_card(id):
-    query = "delete from cards where card_id = ?"
+    query = "delete from cards where id = ?"
     sqlexecute(query, id)
 
 class dbcursor:
@@ -60,6 +60,7 @@ def dbconn():
             detect_types=sqlite3.PARSE_DECLTYPES
         )
         g.db.row_factory = sqlite3.Row
+        g.db.set_trace_callback(print)
     return g.db
 
 def sqlexecute(sql: str, args):
